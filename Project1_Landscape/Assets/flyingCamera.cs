@@ -3,9 +3,11 @@ using System.Collections;
 
 public class flyingCamera : MonoBehaviour
 {
-    float speed = 20f;
+    public float speed = 20f;
+    public float sensitivity = 0.2f;
+    public float shiftMulti = 40f;
+
     private Vector3 prevMouse;
-    float sensitivity = 0.2f;
 
     void Update()
     {
@@ -19,7 +21,15 @@ public class flyingCamera : MonoBehaviour
 
         // take keyboard input and update position
         Vector3 pos = keyboardDir();
-        pos = pos * Time.deltaTime * speed;   
+
+        if (Input.GetKey(KeyCode.LeftShift))
+        {
+            pos = pos * Time.deltaTime * speed * shiftMulti;
+        }
+        else
+        {
+            pos = pos * Time.deltaTime * speed;
+        }
         transform.Translate(pos);
         
 
@@ -50,4 +60,5 @@ public class flyingCamera : MonoBehaviour
         }
         return p_Velocity;
     }
+
 }
