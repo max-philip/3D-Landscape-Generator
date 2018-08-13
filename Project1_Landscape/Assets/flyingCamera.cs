@@ -38,6 +38,8 @@ public class flyingCamera : MonoBehaviour
     // take in keyboard input (both arrows and WASD)
     private Vector3 keyboardDir()
     {
+
+        // ARROWS
         Vector3 p_Velocity = new Vector3();
         if (Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow))
         {
@@ -58,6 +60,18 @@ public class flyingCamera : MonoBehaviour
         {
             p_Velocity += new Vector3(0, 0, -1);
         }
+        
+        // UP and DOWN
+        if (Input.GetKey(KeyCode.C))
+        {
+            p_Velocity += new Vector3(0, 1, 0);
+        }
+
+        if (Input.GetKey(KeyCode.Z))
+        {
+            p_Velocity += new Vector3(0, -1, 0);
+        }
+
         return p_Velocity;
     }
 
