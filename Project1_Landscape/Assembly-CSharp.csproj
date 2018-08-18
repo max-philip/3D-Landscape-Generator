@@ -61,6 +61,7 @@
   <ItemGroup>
     <Compile Include="Assets\DiamondSquare.cs" />
     <Compile Include="Assets\flyingCamera.cs" />
+    <Compile Include="Assets\sunOrbit.cs" />
     <Reference Include="UnityEditor.StandardEvents">
       <HintPath>C:/Users/Max Philip/Desktop/2018 Semester 2/COMP30019/Project_1/Project1_Landscape/Library/ScriptAssemblies/UnityEditor.StandardEvents.dll</HintPath>
     </Reference>
