@@ -3,16 +3,21 @@ using System.Collections;
 
 public class flyingCamera : MonoBehaviour
 {
-    public float speed = 20f;
-    public float sensitivity = 0.2f;
-    public float shiftMulti = 40f;
+    public float speed;
+    public float sensitivity;
+    public float shiftMulti;
 
     private Vector3 prevMouse;
 
     void Update()
     {
 
-        // take in mouse input and change camera perspective
+        //Cursor.visible = false;
+        //Cursor.lockState = CursorLockMode.Locked;
+
+        //Camera.main.fieldOfView = 60.0f;
+
+        // take in mouse input and CHANGE CAMERA PERSPECTIVE
         prevMouse = Input.mousePosition - prevMouse;
         prevMouse = new Vector3(-prevMouse.y * sensitivity, prevMouse.x * sensitivity, 0);
         prevMouse = new Vector3(transform.eulerAngles.x + prevMouse.x, transform.eulerAngles.y + prevMouse.y, 0);
@@ -22,6 +27,8 @@ public class flyingCamera : MonoBehaviour
         // take keyboard input and update position
         Vector3 pos = keyboardDir();
 
+        
+
         if (Input.GetKey(KeyCode.LeftShift))
         {
             pos = pos * Time.deltaTime * speed * shiftMulti;
@@ -30,8 +37,9 @@ public class flyingCamera : MonoBehaviour
         {
             pos = pos * Time.deltaTime * speed;
         }
+
         transform.Translate(pos);
-        
+
 
     }
 
@@ -43,7 +51,7 @@ public class flyingCamera : MonoBehaviour
         Vector3 p_Velocity = new Vector3();
         if (Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow))
         {
-            p_Velocity += new Vector3(1, 0, 0);
+            p_Velocity += new Vector3(1, 0, 0); 
         }
 
         if (Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow))
