@@ -9,25 +9,34 @@ public class flyingCamera : MonoBehaviour
 
     private Vector3 prevMouse;
 
+    private Rigidbody rb;
+
+    private float rotateX = 0.0f;
+    private float rotateY = 0.0f;
+
+
+    void Start()
+    {
+        Screen.lockCursor = true;
+        rb = GetComponent<Rigidbody>();
+    }
+
+
     void Update()
     {
 
-        //Cursor.visible = false;
-        //Cursor.lockState = CursorLockMode.Locked;
-
-        //Camera.main.fieldOfView = 60.0f;
-
         // take in mouse input and CHANGE CAMERA PERSPECTIVE
-        prevMouse = Input.mousePosition - prevMouse;
-        prevMouse = new Vector3(-prevMouse.y * sensitivity, prevMouse.x * sensitivity, 0);
-        prevMouse = new Vector3(transform.eulerAngles.x + prevMouse.x, transform.eulerAngles.y + prevMouse.y, 0);
-        transform.eulerAngles = prevMouse;
-        prevMouse = Input.mousePosition;
+        rotateX += Input.GetAxis("Mouse X") * sensitivity * Time.deltaTime;
+        rotateY += Input.GetAxis("Mouse Y") * sensitivity * Time.deltaTime;
+        rotateY = Mathf.Clamp(rotateY, -90, 90);
+
+        transform.localRotation = Quaternion.AngleAxis(rotateX, Vector3.up);
+        transform.localRotation *= Quaternion.AngleAxis(rotateY, Vector3.left);
 
         // take keyboard input and update position
         Vector3 pos = keyboardDir();
 
-        
+
 
         if (Input.GetKey(KeyCode.LeftShift))
         {
@@ -39,6 +48,9 @@ public class flyingCamera : MonoBehaviour
         }
 
         transform.Translate(pos);
+        //rb.AddForce(pos*speed);
+
+        //rb.MovePosition(transform.position + pos* (speed * Time.deltaTime));
 
 
     }
@@ -48,27 +60,13 @@ public class flyingCamera : MonoBehaviour
     {
 
         // ARROWS
-        Vector3 p_Velocity = new Vector3();
-        if (Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow))
-        {
-            p_Velocity += new Vector3(1, 0, 0); 
-        }
+        //Vector3 p_Velocity = new Vector3();
 
-        if (Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow))
-        {
-            p_Velocity += new Vector3(-1, 0, 0);
-        }
+        float moveH = Input.GetAxis("Horizontal");
+        float moveV = Input.GetAxis("Vertical");
+        Vector3 p_Velocity = new Vector3(moveH, 0.0f, moveV);
 
-        if (Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.UpArrow))
-        {
-            p_Velocity += new Vector3(0, 0, 1);
-        }
 
-        if (Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.DownArrow))
-        {
-            p_Velocity += new Vector3(0, 0, -1);
-        }
-        
         // UP and DOWN
         if (Input.GetKey(KeyCode.C))
         {

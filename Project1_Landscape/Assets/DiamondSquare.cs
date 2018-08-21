@@ -7,6 +7,10 @@ public class DiamondSquare : MonoBehaviour {
     public float cellSize;
     public int cells;
 
+    public Color snowColor = new Color(1, 0.95f, 0.95f, 1);
+    public Color grassColor = new Color(0.376f, 0.502f, 0.22f, 1);
+    public Color sandColor = new Color(0.761f, 0.698f, 0.502f, 1);
+
     public float maxHeight;
 
     Vector3[] vertices;
@@ -95,7 +99,6 @@ public class DiamondSquare : MonoBehaviour {
         mesh.vertices = vertices;
         mesh.uv = uvs;
         mesh.triangles = tris;
-
         mesh.RecalculateBounds();
         mesh.RecalculateNormals();
 
@@ -108,6 +111,36 @@ public class DiamondSquare : MonoBehaviour {
       
         Instantiate(waterSurface, new Vector3(0, waterLevel, 0), new Quaternion(0, 0, 0, 0));
 
+
+
+
+        mesh.colors = setColors(vertices, avgH, waterLevel);
+
+    }
+
+    Color[] setColors(Vector3[] vertices, float avgHigh, float waterLevel)
+    {
+        Color[] colors = new Color[vertices.Length];
+
+        float highestH = HighestHeight(vertices);
+
+        float snowLevel = highestH *0.7f;
+        float sandLevel = waterLevel + 2f;
+
+        for (int i=0; i < vertices.Length; i++)
+        {
+            if (vertices[i].y > snowLevel)
+            {
+                colors[i] = snowColor;
+            } else if (vertices[i].y > sandLevel)
+            {
+                colors[i] = grassColor;
+            } else
+            {
+                colors[i] = sandColor;
+            }
+        }
+        return colors;
     }
 
     void DiamondSquareAlgorithm(int row, int col, int size, float offset)
@@ -140,5 +173,17 @@ public class DiamondSquare : MonoBehaviour {
         return (avgH / vertices.Length);
     }
 
+    float HighestHeight(Vector3[] vertices)
+    {
+        float highest = 0;
+        for (int i = 0; i < vertices.Length; i++)
+        {
+            if (vertices[i].y > highest)
+            {
+                highest = vertices[i].y;
+            }
+        }
+        return highest;
+    }
     
 }
