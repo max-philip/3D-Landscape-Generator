@@ -5,7 +5,7 @@ Shader "Unlit/WaveShader"
 	Properties
 	{
 		_MainTex("Albedo Texture", 2D) = "white" {}
-	_TintColor("Tint Color", Color) = (1,1,1,1)
+		_TintColor("Tint Color", Color) = (1,1,1,1)
 		_Transparency("Transparency", Range(0.0,0.5)) = 0.25
 		_CutoutThresh("Cutout Threshold", Range(0.0,1.0)) = 0.2
 		_Distance("Distance", Float) = 1
@@ -55,13 +55,13 @@ Shader "Unlit/WaveShader"
 	v2f vert(appdata v)
 	{
 		float4 displacement = float4(0.0f, 0.0f, 0.0f, 0.0f);
-	v.vertex += displacement;
-	v.vertex.y = sin(v.vertex.x + _Time.y);
+		v.vertex += displacement;
+		v.vertex.y = sin(v.vertex.x + _Time.y);
 
-	v2f o;
-	o.vertex = mul(UNITY_MATRIX_MVP, v.vertex);
-	o.uv = v.uv;
-	return o;
+		v2f o;
+		o.vertex = mul(UNITY_MATRIX_MVP, v.vertex);
+		o.uv = v.uv;
+		return o;
 	}
 
 	fixed4 frag(v2f i) : SV_Target

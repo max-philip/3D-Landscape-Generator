@@ -22,7 +22,7 @@ public class flyingCamera : MonoBehaviour
     }
 
 
-    void Update()
+    void FixedUpdate()
     {
 
         // take in mouse input and CHANGE CAMERA PERSPECTIVE
@@ -30,29 +30,54 @@ public class flyingCamera : MonoBehaviour
         rotateY += Input.GetAxis("Mouse Y") * sensitivity * Time.deltaTime;
         rotateY = Mathf.Clamp(rotateY, -90, 90);
 
-        transform.localRotation = Quaternion.AngleAxis(rotateX, Vector3.up);
-        transform.localRotation *= Quaternion.AngleAxis(rotateY, Vector3.left);
+        //transform.localRotation = Quaternion.AngleAxis(rotateX, Vector3.up);
+        //transform.localRotation *= Quaternion.AngleAxis(rotateY, Vector3.left);
+
+        rb.rotation = Quaternion.AngleAxis(rotateX, Vector3.up);
+        rb.rotation *= Quaternion.AngleAxis(rotateY, Vector3.left);
 
         // take keyboard input and update position
-        Vector3 pos = keyboardDir();
+        // Vector3 pos = keyboardDir();
 
-
+        float outSpeed = speed;
 
         if (Input.GetKey(KeyCode.LeftShift))
         {
-            pos = pos * Time.deltaTime * speed * shiftMulti;
+            outSpeed = speed * shiftMulti;
         }
-        else
-        {
-            pos = pos * Time.deltaTime * speed;
-        }
+        
 
-        transform.Translate(pos);
+        //  transform.Translate(pos);
+
+
         //rb.AddForce(pos*speed);
 
         //rb.MovePosition(transform.position + pos* (speed * Time.deltaTime));
 
+        float mH = Input.GetAxis ("Horizontal");
+        float mV = Input.GetAxis ("Vertical");
+        float mUD = getUpDown();
+        rb.velocity = new Vector3 (mH, mUD, mV) * outSpeed;
+        rb.velocity = rb.rotation * rb.velocity;
 
+
+    }
+
+    private float getUpDown()
+    {
+        float upDownVal = 0.0f;
+
+        // UP and DOWN
+        if (Input.GetKey(KeyCode.C))
+        {
+            upDownVal = 1.0f;
+        }
+
+        else if (Input.GetKey(KeyCode.Z))
+        {
+            upDownVal = -1.0f;
+        }
+        return upDownVal;
     }
 
     // take in keyboard input (both arrows and WASD)

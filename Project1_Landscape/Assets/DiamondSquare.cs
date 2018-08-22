@@ -7,7 +7,7 @@ public class DiamondSquare : MonoBehaviour {
     public float cellSize;
     public int cells;
 
-    public Color snowColor = new Color(1, 0.95f, 0.95f, 1);
+    public Color snowColor = new Color(1, 0.9f, 0.9f, 1);
     public Color grassColor = new Color(0.376f, 0.502f, 0.22f, 1);
     public Color sandColor = new Color(0.761f, 0.698f, 0.502f, 1);
 
@@ -103,8 +103,6 @@ public class DiamondSquare : MonoBehaviour {
         mesh.RecalculateNormals();
 
 
-
-
         // Instantiate WATER PLANE
         float avgH = AverageHeight(vertices);
         float waterLevel = avgH * 0.9f; // a little below halfway bc why not
@@ -124,7 +122,7 @@ public class DiamondSquare : MonoBehaviour {
 
         float highestH = HighestHeight(vertices);
 
-        float snowLevel = highestH *0.7f;
+        float snowLevel = waterLevel + 12f;
         float sandLevel = waterLevel + 2f;
 
         for (int i=0; i < vertices.Length; i++)
