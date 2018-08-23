@@ -8,6 +8,11 @@ The boundaries were achieved using a discrete approach to collision detection, j
 
 
 
+
+
+MENTION WHERE TEXTURE WAS FROM???
+
+
 PUT LINKS TO STUFF LOOKED AT, AS WELL AS WORKSHOPS WHERE I PULLED CODE (wAVE SHADER)
 
 transparent shader: https://unity3d.com/learn/tutorials/topics/graphics/making-transparent-shader
