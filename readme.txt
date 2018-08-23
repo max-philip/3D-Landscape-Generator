@@ -11,3 +11,6 @@ The boundaries were achieved using a discrete approach to collision detection, j
 PUT LINKS TO STUFF LOOKED AT, AS WELL AS WORKSHOPS WHERE I PULLED CODE (wAVE SHADER)
 
 transparent shader: https://unity3d.com/learn/tutorials/topics/graphics/making-transparent-shader
+
+
+fly cam (kinda? didn't really use it in the end): https://forum.unity.com/threads/fly-cam-simple-cam-script.67042/
