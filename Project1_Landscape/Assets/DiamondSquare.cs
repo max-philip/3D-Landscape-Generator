@@ -18,6 +18,7 @@ public class DiamondSquare : MonoBehaviour {
 
     // Plane for water
     public GameObject waterSurface;
+    public GameObject groundBlock;
 
     // Use this for initialization
     void Start () {
@@ -111,6 +112,7 @@ public class DiamondSquare : MonoBehaviour {
         float waterLevel = avgH * 0.9f; // a little below halfway bc why not
       
         Instantiate(waterSurface, new Vector3(0, waterLevel, 0), new Quaternion(0, 0, 0, 0));
+        Instantiate(groundBlock, new Vector3(0, waterLevel+0.2f, 0), new Quaternion(0, 0, 0, 0));
 
 
 

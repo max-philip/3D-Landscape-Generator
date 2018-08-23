@@ -14,11 +14,21 @@ public class flyingCamera : MonoBehaviour
     private float rotateX = 0.0f;
     private float rotateY = 0.0f;
 
+    private float minX = -62.0f;
+    private float minZ = -62.0f;
+    private float maxX = 62.0f;
+    private float maxZ = 62.0f;
+
 
     void Start()
     {
         Screen.lockCursor = true;
         rb = GetComponent<Rigidbody>();
+    }
+
+    private void Update()
+    {
+        checkBoundary();
     }
 
 
@@ -61,6 +71,9 @@ public class flyingCamera : MonoBehaviour
         rb.velocity = rb.rotation * rb.velocity;
 
 
+
+        checkBoundary();
+
     }
 
     private float getUpDown()
@@ -83,10 +96,6 @@ public class flyingCamera : MonoBehaviour
     // take in keyboard input (both arrows and WASD)
     private Vector3 keyboardDir()
     {
-
-        // ARROWS
-        //Vector3 p_Velocity = new Vector3();
-
         float moveH = Input.GetAxis("Horizontal");
         float moveV = Input.GetAxis("Vertical");
         Vector3 p_Velocity = new Vector3(moveH, 0.0f, moveV);
@@ -104,6 +113,35 @@ public class flyingCamera : MonoBehaviour
         }
 
         return p_Velocity;
+    }
+
+    private void checkBoundary()
+    {
+
+        float currX = this.transform.position.x;
+        float currY = this.transform.position.y;
+        float currZ = this.transform.position.z;
+
+        if (rb.position.x < minX)
+        {
+            this.transform.position = new Vector3(minX, currY, currZ);
+        }
+        if (rb.position.x > maxX)
+        {
+            Vector3 temp = new Vector3(7.0f, 0, 0);
+            this.transform.position = new Vector3(maxX, currY, currZ);
+        }
+
+        if (rb.position.z < minZ)
+        {
+            Vector3 temp = new Vector3(7.0f, 0, 0);
+            this.transform.position = new Vector3(currX, currY, minZ);
+        }
+        if (rb.position.z > maxZ)
+        {
+            Vector3 temp = new Vector3(7.0f, 0, 0);
+            this.transform.position = new Vector3(currX, currY, maxZ);
+        }
     }
 
 }
