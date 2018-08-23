@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class sunOrbit : MonoBehaviour {
 
-    private float dayCycleSpeed = 15f;
+    public float CycleSpeed = 15f;
 
 	// Use this for initialization
 	void Start () {
@@ -13,7 +13,7 @@ public class sunOrbit : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-        transform.RotateAround(Vector3.zero, Vector3.right, dayCycleSpeed * Time.deltaTime);
+        transform.RotateAround(Vector3.zero, Vector3.right, CycleSpeed * Time.deltaTime);
         transform.LookAt(Vector3.zero);
 	}
 }

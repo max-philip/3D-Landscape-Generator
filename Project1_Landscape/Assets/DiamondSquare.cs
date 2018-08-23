@@ -103,6 +103,9 @@ public class DiamondSquare : MonoBehaviour {
         mesh.RecalculateNormals();
 
 
+        MeshCollider meshc = gameObject.AddComponent(typeof(MeshCollider)) as MeshCollider;
+        meshc.sharedMesh = mesh;
+
         // Instantiate WATER PLANE
         float avgH = AverageHeight(vertices);
         float waterLevel = avgH * 0.9f; // a little below halfway bc why not
