@@ -1190,7 +1190,7 @@ MonoBehaviour:
   snowColor: {r: 1, g: 0.95, b: 0.95, a: 1}
   grassColor: {r: 0.376, g: 0.502, b: 0.22, a: 1}
   sandColor: {r: 0.761, g: 0.698, b: 0.502, a: 1}
-  maxHeight: 30
+  maxHeight: 34
   waterSurface: {fileID: 1308562877396030, guid: b737a4a3a06da7b489dd729b08789897,
     type: 2}
   groundBlock: {fileID: 1973020849710882, guid: 21bf1cde3cedc9f44bc50f748f2b2fed,
