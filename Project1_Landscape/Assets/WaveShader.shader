@@ -56,7 +56,7 @@ Shader "Unlit/WaveShader"
 	{
 		float4 displacement = float4(0.0f, 0.0f, 0.0f, 0.0f);
 		v.vertex += displacement;
-		v.vertex.y = sin(v.vertex.x + _Time.y * 1.5f)*1.5f;
+		v.vertex.y = sin(v.vertex.x + _Time.y);
 
 		v2f o;
 		o.vertex = mul(UNITY_MATRIX_MVP, v.vertex);

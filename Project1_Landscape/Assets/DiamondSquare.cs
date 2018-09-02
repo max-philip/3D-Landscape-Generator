@@ -101,6 +101,7 @@ public class DiamondSquare : MonoBehaviour {
         mesh.uv = uvs;
         mesh.triangles = tris;
         mesh.RecalculateBounds();
+        mesh.RecalculateTangents();
         mesh.RecalculateNormals();
 
 
@@ -127,7 +128,7 @@ public class DiamondSquare : MonoBehaviour {
 
         float highestH = HighestHeight(vertices);
 
-        float snowLevel = waterLevel + 12f;
+        float snowLevel = waterLevel + 16f;
         float sandLevel = waterLevel + 2f;
 
         for (int i=0; i < vertices.Length; i++)

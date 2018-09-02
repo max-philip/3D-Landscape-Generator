@@ -63,6 +63,7 @@
     <Compile Include="Assets\flyingCamera.cs" />
     <Compile Include="Assets\sunOrbit.cs" />
     <Compile Include="Assets\TerrainColour.cs" />
+    <None Include="Assets\PhongShader.shader" />
     <None Include="Assets\WaveShader.shader" />
     <None Include="Assets\TGU Skybox Pack\Readme.txt" />
     <None Include="Assets\terrain.shader" />
