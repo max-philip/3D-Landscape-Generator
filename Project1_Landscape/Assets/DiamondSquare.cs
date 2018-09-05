@@ -7,6 +7,7 @@ public class DiamondSquare : MonoBehaviour {
     public float mapSize = 128;
     public int cells = 128;
 
+    // Helper variables
     private int cellsOff;
     private float cellSize;
     private float halfMap;
@@ -16,6 +17,7 @@ public class DiamondSquare : MonoBehaviour {
     public Color grassColour = new Color(0.376f, 0.502f, 0.22f, 1);
     public Color sandColour = new Color(0.761f, 0.698f, 0.502f, 1);
 
+    // Maximum POSSIBLE height for vertices on the map
     public float maxHeight;
 
     Vector3[] vertices;
@@ -44,6 +46,7 @@ public class DiamondSquare : MonoBehaviour {
         // have 3 vertices
         int triCount = cells * cells * 2;
         triCount *= 3;
+
         int[] tris = new int[triCount];
 
         // Apply new mesh to be the landscape GameObject mesh
@@ -82,8 +85,6 @@ public class DiamondSquare : MonoBehaviour {
         vertices[cells].y = Random.Range(-maxHeight, maxHeight);
         vertices[vertices.Length - 1].y = Random.Range(-maxHeight, maxHeight);
         vertices[vertices.Length - 1 - cells].y = Random.Range(-maxHeight, maxHeight);
-
-
 
         int iterations = (int)Mathf.Log(cells, 2);
         int numSquares = 1;
@@ -171,8 +172,6 @@ public class DiamondSquare : MonoBehaviour {
         int mid = (int)(row + halfMap) * cellsOff + (int)(col + halfMap);
         float val = (vertices[topLeft].y + vertices[topLeft + size].y + vertices[botLeft].y + vertices[botLeft + size].y);
         vertices[mid].y = val*0.25f + Random.Range(-offset, offset);
-
-
 
         // averaging step for SQUARE
         vertices[topLeft+halfMap].y = (vertices[topLeft].y + vertices[topLeft+size].y + vertices[mid].y)/ 3 + Random.Range(-offset, offset);
