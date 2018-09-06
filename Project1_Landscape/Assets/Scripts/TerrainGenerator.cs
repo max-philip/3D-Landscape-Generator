@@ -14,10 +14,10 @@ public class TerrainGenerator : MonoBehaviour
     private float cellSize;
     private float halfMap;
 
-    // Terrain colour values
-    public Color snowColour = new Color(1, 0.9f, 0.9f, 1);
-    public Color grassColour = new Color(0.376f, 0.502f, 0.22f, 1);
-    public Color sandColour = new Color(0.761f, 0.698f, 0.502f, 1);
+    // Terrain color values
+    public Color snowcolor = new Color(1, 0.9f, 0.9f, 1);
+    public Color grasscolor = new Color(0.376f, 0.502f, 0.22f, 1);
+    public Color sandcolor = new Color(0.761f, 0.698f, 0.502f, 1);
 
     public float grassOffset = 3.0f;
 
@@ -90,11 +90,8 @@ public class TerrainGenerator : MonoBehaviour
             }
         }
 
-        // set all corners to random values
-        vertices[0].y = Random.Range(-maxHeight, maxHeight);
-        vertices[cells].y = Random.Range(-maxHeight, maxHeight);
-        vertices[vertices.Length - 1].y = Random.Range(-maxHeight, maxHeight);
-        vertices[vertices.Length - 1 - cells].y = Random.Range(-maxHeight, maxHeight);
+        // First step of Diamond Square: set random values to four corners of map
+        vertices = RandomizeCorners(vertices, maxHeight, cells);
 
         int iterations = (int)Mathf.Log(cells, 2);
         int numSquares = 1;
@@ -104,19 +101,19 @@ public class TerrainGenerator : MonoBehaviour
         {
             int row = 0;
 
-            for (int j = 0; j < numSquares; j++)
+            for (int x = 0; x < numSquares; x++)
             {
                 int col = 0;
 
-                for (int k = 0; k < numSquares; k++)
+                for (int y = 0; y < numSquares; y++)
                 {
                     DiamondSquareAlgorithm(row, col, squareSize, maxHeight);
                     col += squareSize;
                 }
                 row += squareSize;
             }
-            numSquares *= 2;
-            squareSize /= 2;
+            numSquares = numSquares * 2;
+            squareSize = squareSize / 2;
 
             // may want to change this
             maxHeight *= 0.5f;
@@ -128,67 +125,100 @@ public class TerrainGenerator : MonoBehaviour
         mesh.triangles = tris;
 
 
-
         MeshCollider meshc = gameObject.AddComponent(typeof(MeshCollider)) as MeshCollider;
         meshc.sharedMesh = mesh;
 
-        // Instantiate WATER PLANE
+        // Instantiate water plane prefab slightly below average vertex height
         float avgH = AverageHeight(vertices);
-        float waterLevel = avgH * 0.9f; // a littlesnowColor below halfway bc why not
-
+        float waterLevel = avgH * 0.9f;
         Instantiate(waterSurface, new Vector3(0, waterLevel, 0), new Quaternion(0, 0, 0, 0));
         Instantiate(groundBlock, new Vector3(0, waterLevel + 0.2f, 0), new Quaternion(0, 0, 0, 0));
 
-        float maxH = MaxHeight(vertices);
-        Debug.Log(avgH*0.9);
-
-        mesh.colors = setColors(vertices, waterLevel, maxH);
+        // Set mesh colors
+        mesh.colors = SetColors(vertices, waterLevel, MaxHeight(vertices));
 
         mesh.RecalculateBounds();
         mesh.RecalculateTangents();
         mesh.RecalculateNormals();
     }
 
-    Color[] setColors(Vector3[] vertices, float waterLevel, float maxHigh)
+    Vector3[] RandomizeCorners(Vector3[] vertices, float maxHeight, int cells)
     {
+        // Corners
+        int TLeft = 0;
+        int TRight = cells;
+        int BLeft = vertices.Length - cells - 1;
+        int BRight = vertices.Length - 1;
+
+        // Initialise the corner values to random within the map range
+        vertices[TLeft].y = Random.Range(-maxHeight, maxHeight);
+        vertices[BLeft].y = Random.Range(-maxHeight, maxHeight);
+        vertices[BRight].y = Random.Range(-maxHeight, maxHeight);
+        vertices[TRight].y = Random.Range(-maxHeight, maxHeight);
+
+        return vertices;
+    }
+
+    Color[] SetColors(Vector3[] vertices, float waterLevel, float maxHigh)
+    {
+        // Vertex colors array
         Color[] colors = new Color[vertices.Length];
 
-        float snowLevel = (maxHigh + waterLevel) / 1.9f;
+        float snowLevel = (maxHigh + waterLevel) / 1.8f;
         float grassLevel = waterLevel + grassOffset;
 
+        // Set vertex color based on height (snow, grass or sand)
         for (int i=0; i < vertices.Length; i++)
         {
             if (vertices[i].y > snowLevel)
             {
-                colors[i] = snowColour;
+                colors[i] = snowcolor;
             } else if (vertices[i].y > grassLevel)
             {
-                colors[i] = grassColour;
+                colors[i] = grasscolor;
             } else
             {
-                colors[i] = sandColour;
+                colors[i] = sandcolor;
             }
         }
         return colors;
     }
 
+
+    // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     void DiamondSquareAlgorithm(int row, int col, int size, float offset)
     {
-        int halfMap = (int)(size * 0.5f);
+        int halfMap = (int)(size / 2);
         int topLeft = row * cellsOff + col;
         int botLeft = (row + size) * cellsOff + col;
-
         int mid = (int)(row + halfMap) * cellsOff + (int)(col + halfMap);
-        float val = (vertices[topLeft].y + vertices[topLeft + size].y + vertices[botLeft].y + vertices[botLeft + size].y);
-        vertices[mid].y = val*0.25f + Random.Range(-offset, offset);
 
-        // averaging step for SQUARE
-        vertices[topLeft+halfMap].y = (vertices[topLeft].y + vertices[topLeft+size].y + vertices[mid].y)/ 3 + Random.Range(-offset, offset);
-        vertices[mid - halfMap].y = (vertices[topLeft].y + vertices[botLeft].y + vertices[mid].y)/3 + Random.Range(-offset, offset);
-        vertices[mid + halfMap].y = (vertices[topLeft + size].y + vertices[botLeft + size].y + vertices[mid].y) / 3 + Random.Range(-offset, offset);
-        vertices[botLeft + halfMap].y = (vertices[botLeft].y + vertices[botLeft + size].y + vertices[mid].y) / 3 + Random.Range(-offset, offset);
+
+        DiamondStep(size, halfMap, topLeft, botLeft, mid, offset);
+
+        SquareStep(size, halfMap, topLeft, botLeft, mid, offset);
     }
 
+    void DiamondStep(int size, int halfMap, int topLeft, int botLeft, int mid, float offset)
+    {
+        float val = (vertices[topLeft].y + vertices[topLeft + size].y + vertices[botLeft].y + vertices[botLeft + size].y);
+        vertices[mid].y = val * 0.25f + Random.Range(-offset, offset);
+    }
+
+    void SquareStep(int size, int halfMap, int topLeft, int botLeft, int mid, float offset)
+    {
+        vertices[topLeft + halfMap].y = CalcSquareHeight(vertices, topLeft, topLeft + size, mid, offset);
+        vertices[mid - halfMap].y = CalcSquareHeight(vertices, topLeft, botLeft, mid, offset);
+        vertices[mid + halfMap].y = CalcSquareHeight(vertices, topLeft + size, botLeft + size, mid, offset);
+        vertices[botLeft + halfMap].y = CalcSquareHeight(vertices, botLeft, botLeft + size, mid, offset);
+    }
+
+    float CalcSquareHeight(Vector3[] vertices, int p1, int p2, int p3, float off)
+    {
+        return (vertices[p1].y + vertices[p2].y + vertices[p3].y) / 3 + Random.Range(-off, off);
+    }
+
+    // Get average height of all vertices in the generated terrain
     float AverageHeight(Vector3[] vertices)
     {
         float avgH = 0;
@@ -200,6 +230,7 @@ public class TerrainGenerator : MonoBehaviour
         return (avgH / vertices.Length);
     }
 
+    // Get height value of highest vertex in the terrain
     float MaxHeight(Vector3[] vertices)
     {
         float maxH = 0.0f;
@@ -211,9 +242,6 @@ public class TerrainGenerator : MonoBehaviour
             }
         }
 
-        Debug.Log(maxH);
-
         return maxH;
     }
-
 }

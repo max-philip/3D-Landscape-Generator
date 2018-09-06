@@ -10,13 +10,12 @@ public class flyingCamera : MonoBehaviour
     public float FOV = 60.0f;
     public Camera myCamera;
 
-    private Vector3 prevMouse;
-
     private Rigidbody rb;
 
     private float rotateX = 0.0f;
     private float rotateY = 0.0f;
 
+    // Terrain boundary values
     private float minX = -61.5f;
     private float minZ = -61.5f;
     private float maxX = 61.5f;
@@ -27,9 +26,6 @@ public class flyingCamera : MonoBehaviour
         Cursor.lockState = CursorLockMode.Locked;
         rb = GetComponent<Rigidbody>();
         myCamera.fieldOfView = FOV;
-
-        rb.rotation = Quaternion.AngleAxis(45, Vector3.down);
-        rb.rotation *= Quaternion.AngleAxis(45, Vector3.right);
     }
 
     private void Update()
@@ -52,10 +48,11 @@ public class flyingCamera : MonoBehaviour
 
     void FixedUpdate()
     {
+        // Mouse input
+        rotateX += Input.GetAxis("Mouse X") * Time.deltaTime * sensitivity;
+        rotateY += Input.GetAxis("Mouse Y") * Time.deltaTime * sensitivity;
 
-        // Take in mouse input, and set limit on mouse rotation
-        rotateX += Input.GetAxis("Mouse X") * sensitivity * Time.deltaTime;
-        rotateY += Input.GetAxis("Mouse Y") * sensitivity * Time.deltaTime;
+        // Bound on y axis of camera control
         rotateY = Mathf.Clamp(rotateY, -90, 90);
 
         // Apply rotation to the Rigidbody component
@@ -69,9 +66,11 @@ public class flyingCamera : MonoBehaviour
             outSpeed = speed * shiftMulti;
         }
 
-        float mH = Input.GetAxis ("Horizontal");
-        float mV = Input.GetAxis ("Vertical");
+        // Keyboard input
+        float mH = Input.GetAxis("Horizontal");
+        float mV = Input.GetAxis("Vertical");
         float mUD = getUpDown();
+
         rb.velocity = new Vector3 (mH, mUD, mV) * outSpeed;
         rb.velocity = rb.rotation * rb.velocity;
 
@@ -82,12 +81,11 @@ public class flyingCamera : MonoBehaviour
     {
         float upDownVal = 0.0f;
 
-        // UP and DOWN control
+        // Up and Down control. Makes movement in general a bit smoother
         if (Input.GetKey(KeyCode.C))
         {
             upDownVal = 1.0f;
         }
-
         else if (Input.GetKey(KeyCode.Z))
         {
             upDownVal = -1.0f;
@@ -95,6 +93,7 @@ public class flyingCamera : MonoBehaviour
         return upDownVal;
     }
 
+    // Discrete method of keeping the user within the terrain boundaries
     private void checkBoundary()
     {
         float currX = this.transform.position.x;

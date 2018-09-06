@@ -1,80 +1,71 @@
-﻿//UNITY_SHADER_NO_UPGRADE
+﻿// Shader to give the effect of clear waves. The solution provided for Lab 4 of
+// COMP30019, Semester 2 2018 was used as a base. Parameters changed to suit the
+// desired wave effect.
+
+// Clear water effect was achieved with reference to the official Unity tutorial: 
+// "Making A Transparent Shader".
 
 Shader "Unlit/WaveShader"
 {
 	Properties
 	{
-		_MainTex("Albedo Texture", 2D) = "white" {}
-		_TintColor("Tint Color", Color) = (1,1,1,1)
-		_Transparency("Transparency", Range(0.0,0.5)) = 0.25
-		_CutoutThresh("Cutout Threshold", Range(0.0,1.0)) = 0.2
-		_Distance("Distance", Float) = 1
-		_Amplitude("Amplitude", Float) = 1
-		_Speed("Speed", Float) = 1
-		_Amount("Amount", Range(0.0,1.0)) = 1
+		_MainTex("Texture", 2D) = "white" {}
+		_TintColor("Tint", Color) = (1,1,1,1)
+		_Transparency("Transparency", Range(0.5,1.0)) = 0.75
 	}
-
-		SubShader
+	SubShader
 	{
-		Tags{ "Queue" = "Transparent" "RenderType" = "Transparent" }
-		LOD 100
-
-		ZWrite Off
+		Tags{"RenderType" = "Transparent" "Queue" = "Transparent"}
 		Blend SrcAlpha OneMinusSrcAlpha
 
 		Pass
-	{
-		CGPROGRAM
-		#pragma vertex vert
-		#pragma fragment frag
-
-		#include "UnityCG.cginc"
-
-		struct appdata
 		{
-			float4 vertex : POSITION;
-			float2 uv : TEXCOORD0;
-		};
+			CGPROGRAM
+			#pragma vertex vert
+			#pragma fragment frag
 
-		struct v2f
-		{
-			float2 uv : TEXCOORD0;
-			float4 vertex : SV_POSITION;
-		};
+			#include "UnityCG.cginc"
 
-		sampler2D _MainTex;
-		float4 _MainTex_ST;
-		float4 _TintColor;
-		float _Transparency;
-		float _CutoutThresh;
-		float _Distance;
-		float _Amplitude;
-		float _Speed;
-		float _Amount;
+			float4 _TintColor;
+			float _Transparency;
+			sampler2D _MainTex;
 
-		v2f vert(appdata v)
-		{
-			float4 displacement = float4(0.0f, 0.0f, 0.0f, 0.0f);
-			v.vertex += displacement;
-			v.vertex.y = sin(v.vertex.x + _Time.y);
+			struct vertIn
+			{
+				float4 vertex : POSITION;
+				float4 uv : TEXCOORD0;
+			};
 
-			v2f o;
-			o.vertex = mul(UNITY_MATRIX_MVP, v.vertex);
-			o.uv = v.uv;
-			return o;
-		}
+			struct vertOut
+			{
+				float4 vertex : SV_POSITION;
+				float4 uv : TEXCOORD0;
+			};
 
-		fixed4 frag(v2f i) : SV_Target
-		{
-			// sample the texture
-			fixed4 col = tex2D(_MainTex, i.uv) + _TintColor;
+			// Implementation of the vertex shader
+			vertOut vert(vertIn v)
+			{
+				vertOut o;
+
+				// Amplitude and frequency values for the waves
+				float amp = 1.1;
+				float freq = 0.7;
+
+				// Displace the original vertex in model space
+				v.vertex.y = sin((v.vertex.x + _Time.y) * freq) * amp;
+				o.vertex = UnityObjectToClipPos(v.vertex);
+				o.uv = v.uv;
+				return o;
+			}
+
+			// Implementation of the fragment shader
+			fixed4 frag(vertOut v) : SV_Target
+			{
+			fixed4 col = tex2D(_MainTex, v.uv) + _TintColor;
 			col.a = _Transparency;
-			clip(col.r - _CutoutThresh);
 			return col;
+			}
+			ENDCG
 		}
-		ENDCG
 	}
-}
-
-
 }

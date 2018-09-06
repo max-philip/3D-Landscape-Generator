@@ -326,7 +326,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 472ab5b8927553d4aaa6678e594a8062, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cycleSpeed: 20
+  cycleSpeed: 15
 --- !u!1 &246627549
 GameObject:
   m_ObjectHideFlags: 0
@@ -1176,7 +1176,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 472ab5b8927553d4aaa6678e594a8062, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cycleSpeed: 20
+  cycleSpeed: 15
 --- !u!1 &1125257672
 GameObject:
   m_ObjectHideFlags: 0
@@ -2126,7 +2126,7 @@ MonoBehaviour:
   m_MinValue: 0
   m_MaxValue: 150
   m_WholeNumbers: 0
-  m_Value: 20
+  m_Value: 15
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls:
