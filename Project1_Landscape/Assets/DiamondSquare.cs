@@ -67,13 +67,13 @@ public class DiamondSquare : MonoBehaviour {
                     int topLeft = i * cellsOff + j;
                     int bottomLeft = (i + 1) * cellsOff + j;
 
-                    tris[triOffset] = topLeft;
-                    tris[triOffset + 1] = topLeft + 1;
-                    tris[triOffset + 2] = bottomLeft + 1;
+                    tris[triOffset + 1] = topLeft;
+                    tris[triOffset + 2] = topLeft + 1;
+                    tris[triOffset] = bottomLeft + 1;
 
-                    tris[triOffset + 3] = topLeft;
-                    tris[triOffset + 4] = bottomLeft + 1;
-                    tris[triOffset + 5] = bottomLeft;
+                    tris[triOffset + 4] = topLeft;
+                    tris[triOffset + 5] = bottomLeft + 1;
+                    tris[triOffset + 3] = bottomLeft;
 
                     triOffset += 6;
                 } 
@@ -116,9 +116,7 @@ public class DiamondSquare : MonoBehaviour {
         mesh.vertices = vertices;
         mesh.uv = uvs;
         mesh.triangles = tris;
-        mesh.RecalculateBounds();
-        mesh.RecalculateTangents();
-        mesh.RecalculateNormals();
+        
 
 
         MeshCollider meshc = gameObject.AddComponent(typeof(MeshCollider)) as MeshCollider;
@@ -131,11 +129,15 @@ public class DiamondSquare : MonoBehaviour {
         Instantiate(waterSurface, new Vector3(0, waterLevel, 0), new Quaternion(0, 0, 0, 0));
         Instantiate(groundBlock, new Vector3(0, waterLevel+0.2f, 0), new Quaternion(0, 0, 0, 0));
 
-
+       
 
 
         mesh.colors = setColors(vertices, avgH, waterLevel);
 
+        mesh.RecalculateBounds();
+        mesh.RecalculateTangents();
+        mesh.RecalculateNormals();
+        
     }
 
     Color[] setColors(Vector3[] vertices, float avgHigh, float waterLevel)

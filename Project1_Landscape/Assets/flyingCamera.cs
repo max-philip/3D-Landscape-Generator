@@ -14,10 +14,10 @@ public class flyingCamera : MonoBehaviour
     private float rotateX = 0.0f;
     private float rotateY = 0.0f;
 
-    private float minX = -62.0f;
-    private float minZ = -62.0f;
-    private float maxX = 62.0f;
-    private float maxZ = 62.0f;
+    private float minX = -61.5f;
+    private float minZ = -61.5f;
+    private float maxX = 61.5f;
+    private float maxZ = 61.5f;
 
     void Start()
     {
@@ -95,21 +95,25 @@ public class flyingCamera : MonoBehaviour
         }
         if (rb.position.x > maxX)
         {
-            Vector3 temp = new Vector3(7.0f, 0, 0);
             this.transform.position = new Vector3(maxX, currY, currZ);
+        }
+        if (rb.position.x < minX)
+        {
+            this.transform.position = new Vector3(minX, currY, currZ);
         }
 
         // Z boundary for the landscape
         if (rb.position.z < minZ)
         {
-            Vector3 temp = new Vector3(7.0f, 0, 0);
             this.transform.position = new Vector3(currX, currY, minZ);
         }
         if (rb.position.z > maxZ)
         {
-            Vector3 temp = new Vector3(7.0f, 0, 0);
             this.transform.position = new Vector3(currX, currY, maxZ);
         }
+        if (rb.position.z < minZ)
+        {
+            this.transform.position = new Vector3(currX, currY, minZ);
+        }
     }
-
 }
