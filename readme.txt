@@ -24,3 +24,8 @@ transparent shader: https://unity3d.com/learn/tutorials/topics/graphics/making-t
 
 
 fly cam (kinda? didn't really use it in the end): https://forum.unity.com/threads/fly-cam-simple-cam-script.67042/
+
+
+
+Resources:
+
