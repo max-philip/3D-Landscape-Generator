@@ -21,5 +21,5 @@ COMP30019 Lab 5: Used as the basis for the Phong shader.
 Transparent shader: https://unity3d.com/learn/tutorials/topics/graphics/making-transparent-shader
 Official Unity tutorial used as a reference
 
-Daimond Square Video: https://www.youtube.com/watch?v=1HV8GbFnCik&pbjreload=10
+Diamond Square Video: https://www.youtube.com/watch?v=1HV8GbFnCik&pbjreload=10
 Used as reference to understand how the algorithm works
