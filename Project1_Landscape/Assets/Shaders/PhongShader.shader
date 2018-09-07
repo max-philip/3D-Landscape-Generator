@@ -79,7 +79,7 @@ Shader "Unlit/PhongShader"
 				// Calculate diffuse RBG reflections, we save the results of L.N because we will use it again
 				// (when calculating the reflected ray in our specular component)
 				float fAtt = 0.9;
-				float Kd = 1;
+				float Kd = 0.9;
 				float3 L = normalize(_WorldSpaceLightPos0);
 				float LdotN = dot(L, interpNormal);
 				float3 dif = fAtt * _PointLightColor.rgb * Kd * v.color.rgb * saturate(LdotN);

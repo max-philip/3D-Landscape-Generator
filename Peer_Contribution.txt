@@ -1,0 +1,19 @@
+Peer Assessment of Contribution:
+
+Max (mphilip1)
+- Diamond Square Terrain generation (partly)
+- Phong shading
+- Sun orbit script
+- Water shading (base)
+- Camera controls
+- Terrain vertex colouring
+- UI elements (sliders)
+
+
+Jonas (jolausson)
+- Diamond Square Terrain generation (partly)
+- Sun model
+- Overall refatoring and commenting/clean up
+- Camera boundaries
+- UI elements (controls text)
+- Water transparency added to shader

@@ -5,13 +5,12 @@ using UnityEngine.UI;
 
 public class TerrainGenerator : MonoBehaviour
 {
-    
-    public float mapSize = 128;
+    public int mapSize = 128;
     public int cells = 128;
 
     // Helper variables
     private int cellsOff;
-    private float cellSize;
+    private int cellSize;
     private float halfMap;
 
     // Terrain color values
@@ -57,35 +56,31 @@ public class TerrainGenerator : MonoBehaviour
         int triCount = cells * cells * 2;
         triCount *= 3;
 
-        int[] tris = new int[triCount];
+        int[] triangles = new int[triCount];
 
-        // Apply new mesh to be the landscape GameObject mesh
-        Mesh mesh = new Mesh();
-        GetComponent<MeshFilter>().mesh = mesh;
+        int offset = 0;
 
-        int triOffset = 0;
-
-        for (int i = 0; i <= cells; i++)
+        for (int x = 0; x <= cells; x++)
         {
-            for (int j = 0; j <= cells; j++)
+            for (int y = 0; y <= cells; y++)
             {
-                vertices[i * cellsOff + j] = new Vector3(-halfMap + j * cellSize, 0.0f, halfMap - i * cellSize);
-                uvs[i * cellsOff + j] = new Vector2((float)i / cells, (float)j / cells);
+                vertices[x * cellsOff + y] = new Vector3(-halfMap + y * cellSize, 0.0f, halfMap - x * cellSize);
+                uvs[x * cellsOff + y] = new Vector2((x / cells), (y / cells));
 
-                if (i < cells && j < cells)
+                if ((x < cells) && (y < cells))
                 {
-                    int topLeft = i * cellsOff + j;
-                    int bottomLeft = (i + 1) * cellsOff + j;
+                    int top_left = x * cellsOff + y;
+                    int bottom_left = (x + 1) * cellsOff + y;
 
-                    tris[triOffset + 1] = topLeft;
-                    tris[triOffset + 2] = topLeft + 1;
-                    tris[triOffset] = bottomLeft + 1;
+                    triangles[offset] = bottom_left + 1;
+                    triangles[offset + 1] = top_left;
+                    triangles[offset + 2] = top_left + 1;
 
-                    tris[triOffset + 4] = topLeft;
-                    tris[triOffset + 5] = bottomLeft + 1;
-                    tris[triOffset + 3] = bottomLeft;
+                    triangles[offset + 3] = bottom_left;
+                    triangles[offset + 4] = top_left;
+                    triangles[offset + 5] = bottom_left + 1;
 
-                    triOffset += 6;
+                    offset += 6;
                 }
             }
         }
@@ -93,40 +88,17 @@ public class TerrainGenerator : MonoBehaviour
         // First step of Diamond Square: set random values to four corners of map
         vertices = RandomizeCorners(vertices, maxHeight, cells);
 
-        int iterations = (int)Mathf.Log(cells, 2);
-        int numSquares = 1;
-        int squareSize = cells;
+        // Do the Diamond Square Algorithm iterations
+        DoIterations(cells, maxHeight);
 
-        for (int i = 0; i <= iterations; i++)
-        {
-            int row = 0;
+        // Apply new mesh to be the landscape mesh
+        Mesh mesh = new Mesh();
+        GetComponent<MeshFilter>().mesh = mesh;
 
-            for (int x = 0; x < numSquares; x++)
-            {
-                int col = 0;
-
-                for (int y = 0; y < numSquares; y++)
-                {
-                    DiamondSquareAlgorithm(row, col, squareSize, maxHeight);
-                    col += squareSize;
-                }
-                row += squareSize;
-            }
-            numSquares = numSquares * 2;
-            squareSize = squareSize / 2;
-
-            // may want to change this
-            maxHeight *= 0.5f;
-        }
-
-
+        // Assign our vertex, uv and triangle arrays
         mesh.vertices = vertices;
         mesh.uv = uvs;
-        mesh.triangles = tris;
-
-
-        MeshCollider meshc = gameObject.AddComponent(typeof(MeshCollider)) as MeshCollider;
-        meshc.sharedMesh = mesh;
+        mesh.triangles = triangles;
 
         // Instantiate water plane prefab slightly below average vertex height
         float avgH = AverageHeight(vertices);
@@ -137,6 +109,11 @@ public class TerrainGenerator : MonoBehaviour
         // Set mesh colors
         mesh.colors = SetColors(vertices, waterLevel, MaxHeight(vertices));
 
+        // Terrain collider
+        MeshCollider mesh_collider = gameObject.AddComponent(typeof(MeshCollider)) as MeshCollider;
+        mesh_collider.sharedMesh = mesh;
+
+        // Recalculate after all other operations are complete
         mesh.RecalculateBounds();
         mesh.RecalculateTangents();
         mesh.RecalculateNormals();
@@ -157,6 +134,38 @@ public class TerrainGenerator : MonoBehaviour
         vertices[TRight].y = Random.Range(-maxHeight, maxHeight);
 
         return vertices;
+    }
+
+    // Perform diamond square iterations
+    void DoIterations(int cells, float maxHeight)
+    {
+        // Starting number of squares and each squares initial dimension
+        int curr_squares = 1;
+        int square_dims = cells;
+
+        // Total iterations until completion
+        int total_iter = (int) Mathf.Log(cells, 2);
+
+        for (int curr_iter = 0; curr_iter <= total_iter; curr_iter++)
+        {
+            int row = 0;
+
+            for (int x = 0; x < curr_squares; x++)
+            {
+                int col = 0;
+
+                for (int y = 0; y < curr_squares; y++)
+                {
+                    DiamondSquareAlgorithm(row, col, square_dims, maxHeight);
+                    col += square_dims;
+                }
+                row += square_dims;
+            }
+            // Recalculate values after each iteration
+            curr_squares = curr_squares * 2;
+            square_dims = square_dims / 2;
+            maxHeight *= 0.5f;
+        }
     }
 
     Color[] SetColors(Vector3[] vertices, float waterLevel, float maxHigh)
@@ -184,38 +193,36 @@ public class TerrainGenerator : MonoBehaviour
         return colors;
     }
 
-
-    // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    void DiamondSquareAlgorithm(int row, int col, int size, float offset)
+    // Perform diamond and square steps of the algorithm
+    void DiamondSquareAlgorithm(int row, int col, int size, float height_offset)
     {
         int halfMap = (int)(size / 2);
         int topLeft = row * cellsOff + col;
         int botLeft = (row + size) * cellsOff + col;
         int mid = (int)(row + halfMap) * cellsOff + (int)(col + halfMap);
 
+        DiamondStep(size, halfMap, topLeft, botLeft, mid, height_offset);
 
-        DiamondStep(size, halfMap, topLeft, botLeft, mid, offset);
-
-        SquareStep(size, halfMap, topLeft, botLeft, mid, offset);
+        SquareStep(size, halfMap, topLeft, botLeft, mid, height_offset);
     }
 
-    void DiamondStep(int size, int halfMap, int topLeft, int botLeft, int mid, float offset)
+    void DiamondStep(int size, int halfMap, int topLeft, int botLeft, int mid, float height_offset)
     {
         float val = (vertices[topLeft].y + vertices[topLeft + size].y + vertices[botLeft].y + vertices[botLeft + size].y);
-        vertices[mid].y = val * 0.25f + Random.Range(-offset, offset);
+        vertices[mid].y = val * 0.25f + Random.Range(-height_offset, height_offset);
     }
 
-    void SquareStep(int size, int halfMap, int topLeft, int botLeft, int mid, float offset)
+    void SquareStep(int size, int halfMap, int topLeft, int botLeft, int mid, float height_offset)
     {
-        vertices[topLeft + halfMap].y = CalcSquareHeight(vertices, topLeft, topLeft + size, mid, offset);
-        vertices[mid - halfMap].y = CalcSquareHeight(vertices, topLeft, botLeft, mid, offset);
-        vertices[mid + halfMap].y = CalcSquareHeight(vertices, topLeft + size, botLeft + size, mid, offset);
-        vertices[botLeft + halfMap].y = CalcSquareHeight(vertices, botLeft, botLeft + size, mid, offset);
+        vertices[topLeft + halfMap].y = CalcSquareHeight(vertices, topLeft, topLeft + size, mid, height_offset);
+        vertices[mid - halfMap].y = CalcSquareHeight(vertices, topLeft, botLeft, mid, height_offset);
+        vertices[mid + halfMap].y = CalcSquareHeight(vertices, topLeft + size, botLeft + size, mid, height_offset);
+        vertices[botLeft + halfMap].y = CalcSquareHeight(vertices, botLeft, botLeft + size, mid, height_offset);
     }
 
-    float CalcSquareHeight(Vector3[] vertices, int p1, int p2, int p3, float off)
+    float CalcSquareHeight(Vector3[] vertices, int p1, int p2, int p3, float height_offset)
     {
-        return (vertices[p1].y + vertices[p2].y + vertices[p3].y) / 3 + Random.Range(-off, off);
+        return (vertices[p1].y + vertices[p2].y + vertices[p3].y) / 3 + Random.Range(-height_offset, height_offset);
     }
 
     // Get average height of all vertices in the generated terrain
